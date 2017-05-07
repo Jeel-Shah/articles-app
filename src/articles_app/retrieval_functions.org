@@ -10,18 +10,16 @@ Furthermore, it will prettify the data into list items that hiccup can use to
 insert into our page.
 
 #+BEGIN_SRC clojure :tangle yes
-  (ns articles-app.retrieval-functions)
+  (ns articles-app.retrieval-functions
+    (:require [feedme]))
 #+END_SRC
 
 We will need a function to make a JSON call to the websites which output as
-json. For some websites such as ~hacker news~ which return upto \(500\)
-articles, we will only choose the first 10. Fortunately for us, clojure is
-code-as-data which means our json data will be instantly operable.
-
-Some websites will have their own functions since each API is different (hacker
-news).
+json. Some websites will have their own functions since each API is different.
+First we'll make a ~rss~ reader since most websites have an rss feed. We will
+use [[https://github.com/tebeka/feedme][feedme]] to read the ~rss~ in.
 
 #+BEGIN_SRC clojure :tangle yes
-  (defn read-json [json-url]
-    (slurp json-url))
+  (defn read-rss [rss-url]
+    (feedme/parse rss-url))
 #+END_SRC
