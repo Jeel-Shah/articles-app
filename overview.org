@@ -1,0 +1,32 @@
+#+TITLE: Overview
+#+DATE: <2017-05-07 Sun>
+#+AUTHOR: Jeel Shah
+
+* What's this about?
+  There are a few websites that I would like to get articles from; some of these
+  websites have rss feeds and some don't. Furthermore, I would like to automate
+  the process of getting a pdf version of some of these articles and
+  recommendations as well.
+
+  There might be something like this out there but I'm going to build it anyway.
+  It's pretty cool (to me anyway.)
+
+* How it should work (look)
+  I just need it to be a (have)
+
+  1. simple list of links to the various websites (my preference)
+  2. option to print any one of the articles to pdf
+  3. ability to add new websites easily
+
+  As an aside, I wonder if there is some auto rss feed generator for websites
+  ...
+
+* Initial Websites
+  1. aeon.co
+  2. r/clojure
+  3. r/haskell
+  4. hacker news
+  5. paulgraham.com
+  6. r/machinelearning
+  7. aiweekly
+  
