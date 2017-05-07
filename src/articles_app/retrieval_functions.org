@@ -14,6 +14,9 @@ insert into our page.
     (:require [feedme]))
 #+END_SRC
 
+#+RESULTS:
+: nil
+
 We will need a function to make a JSON call to the websites which output as
 json. Some websites will have their own functions since each API is different.
 First we'll make a ~rss~ reader since most websites have an rss feed. We will
@@ -23,3 +26,31 @@ use [[https://github.com/tebeka/feedme][feedme]] to read the ~rss~ in.
   (defn read-rss [rss-url]
     (feedme/parse rss-url))
 #+END_SRC
+
+#+RESULTS:
+: #'user/read-rss
+
+We can look at the entries from the ~rss~ feed by using ~:entries~. Let's use
+hacker news as an example.
+#+BEGIN_SRC clojure
+  (def hacker-news (:entries (read-rss "https://news.ycombinator.com/rss")))
+#+END_SRC
+
+#+RESULTS:
+: #'user/hacker-news
+
+#+BEGIN_SRC clojure
+  (nth (seq hacker-news) 0)
+#+END_SRC
+
+#+RESULTS:
+: '(:content "<a href=\"https://news.ycombinator.com/item?id=14287235\">Comments</a>"  :updated nil  :title "Wikipedia has cancer"  :author ""  :categories ()  :link "https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost/2017-02-27/Op-ed"  :id "https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost/2017-02-27/Op-ed"  :content-type nil  :published #inst "2017-05-07T19:49:32.000-00:00")
+
+We can easily get the title by using ~:title~.
+
+#+BEGIN_SRC clojure
+  (:title (nth (seq hacker-news) 0))
+#+END_SRC
+
+#+RESULTS:
+: Wikipedia has cancer
