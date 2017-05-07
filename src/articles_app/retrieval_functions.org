@@ -54,3 +54,7 @@ We can easily get the title by using ~:title~.
 
 #+RESULTS:
 : Wikipedia has cancer
+
+#+BEGIN_SRC clojure :tangle yes
+
+#+END_SRC
