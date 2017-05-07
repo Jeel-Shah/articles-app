@@ -1,6 +1,6 @@
 # articles-app
 
-See [Overview][https://github.com/Jeel-Shah/articles-app/blob/master/overview.org]
+See [Overview](https://github.com/Jeel-Shah/articles-app/blob/master/overview.org)
 
 ## Prerequisites
 
