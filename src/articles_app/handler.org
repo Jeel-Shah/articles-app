@@ -1,0 +1,38 @@
+#+title: Handler
+#+date: <2017-05-07 Sun>
+#+author: Jeel Shah
+
+The handler is like the ~main~ for the application that we are trying to build.
+We'll be using ~compojure~ to create our web server and [[https://github.com/weavejester/hiccup][hiccup]] to generate the
+html templates.
+
+We'll also set up a simple db to keep track of websites for user (in this case,
+myself).
+
+#+BEGIN_SRC clojure :tangle yes
+(ns articles-app.handler
+  (:require [compojure.core :refer :all]
+            [compojure.route :as route]
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+#+END_SRC
+
+We can define routes by using ~defroutes~. We will only have one route for the
+time being namely "/" because the interesting links should be at the forefront.
+In other words, cut the bs and show me the goods.
+
+For the time being, "/" will just return a simple string (for testing purposes)
+however, that will be replaced by a function call to retrieve the posts from a
+seperate namespace that we design latter.
+
+#+BEGIN_SRC clojure :tangle yes
+  (defroutes app-routes
+    (GET "/" [] "Hello World!")
+    (route/not-found "Sorry, that doesn\'t make sense."))
+#+END_SRC
+
+In order to run the app we need the following:
+
+#+BEGIN_SRC clojure :tangle yes
+  (def app
+    (wrap-defaults app-routes site-defaults))
+#+END_SRC
