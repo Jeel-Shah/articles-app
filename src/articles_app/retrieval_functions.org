@@ -11,7 +11,8 @@ insert into our page.
 
 #+BEGIN_SRC clojure :tangle yes
   (ns articles-app.retrieval-functions
-    (:require [feedme]))
+    (:require [feedme]
+              [clojure.java.jdbc :as sql]))
 #+END_SRC
 
 #+RESULTS:
@@ -55,6 +56,9 @@ We can easily get the title by using ~:title~.
 #+RESULTS:
 : Wikipedia has cancer
 
-#+BEGIN_SRC clojure :tangle yes
+Now that we have simple retrieval function for our rss feeds, we can create a
+retrieval function for ~sqlite~ db. 
 
+#+BEGIN_SRC clojure
+  (def user-db {:classname "org.sqlite.JDBC" :subprotocol "sqlite" "user_db.db"})
 #+END_SRC
