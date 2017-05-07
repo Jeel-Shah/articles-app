@@ -7,7 +7,7 @@
                  [ring/ring-defaults "0.2.1"]
                  [feedme "0.0.3"]
                  [hiccup "1.0.5"]
-                 [org.clojure/java.jdbc "0.7.0-alpha3"]
+                 [org.clojure/java.jdbc "0.3.7"]
                  [org.xerial/sqlite-jdbc "3.7.2"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler articles-app.handler/app}

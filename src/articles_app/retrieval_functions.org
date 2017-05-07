@@ -57,8 +57,45 @@ We can easily get the title by using ~:title~.
 : Wikipedia has cancer
 
 Now that we have simple retrieval function for our rss feeds, we can create a
-retrieval function for ~sqlite~ db. 
+retrieval function for ~sqlite~ db. First let's create a db.
 
 #+BEGIN_SRC clojure
-  (def user-db {:classname "org.sqlite.JDBC" :subprotocol "sqlite" "user_db.db"})
+  (def user-db {:classname "org.sqlite.JDBC" :subprotocol "sqlite" :subname "db.db"})
 #+END_SRC
+
+#+RESULTS:
+: #'user/user-db
+
+Then let's add a user table which has fields name and links. The links field
+will be a string of text however, the text will contain a vector of the user's
+preferred feeds.
+#+BEGIN_SRC clojure
+  (defn create-db []
+    (try (sql/db-do-commands user-db
+                             (sql/create-table-ddl :users
+                                                   [:id :integer :primary :key :autoincrement]
+                                                   [:name :text]
+                                                   [:links :text]))
+         (catch Exception e (println e))))
+
+  (create-db)
+#+END_SRC
+
+#+RESULTS:
+: #'user/create-db(0)
+
+#+BEGIN_SRC clojure
+  (sql/insert! user-db :users {:name "Jeel Shah" :links "[news.ycombinator.com/rss]"})
+#+END_SRC
+
+#+RESULTS:
+| :last_insert_rowid | nil | 1 |
+
+We're going to test our db by retreving the (only) record from our db.
+
+#+BEGIN_SRC clojure
+  (sql/query user-db "select name, links from users")
+#+END_SRC
+
+#+RESULTS:
+| :name | Jeel Shah | :links | [news.ycombinator.com/rss] |
