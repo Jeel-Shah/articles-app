@@ -1,0 +1,27 @@
+#+TITLE: Retrieval Functions
+#+DATE: <2017-05-07 Sun>
+#+AUTHOR: Jeel Shah
+
+We will have a seperate namespace which contains functions which will retrieve:
+  1. RSS data
+  2. JSON data
+
+Furthermore, it will prettify the data into list items that hiccup can use to
+insert into our page.
+
+#+BEGIN_SRC clojure :tangle yes
+  (ns articles-app.retrieval-functions)
+#+END_SRC
+
+We will need a function to make a JSON call to the websites which output as
+json. For some websites such as ~hacker news~ which return upto \(500\)
+articles, we will only choose the first 10. Fortunately for us, clojure is
+code-as-data which means our json data will be instantly operable.
+
+Some websites will have their own functions since each API is different (hacker
+news).
+
+#+BEGIN_SRC clojure :tangle yes
+  (defn read-json [json-url]
+    (slurp json-url))
+#+END_SRC
