@@ -47,7 +47,8 @@ we have those links, we will be able to use ~read-rss~.
   (defn user-links [user-name db]
     (-> (sql/query db ["select links from users where name=?" user-name])
         first
-        :links))
+        :links
+        read-string))
 #+END_SRC
 
 #+RESULTS:
@@ -93,6 +94,13 @@ Testing the function ~user-links~. The correct output should be: "[news.ycombina
 #+END_SRC
 #+RESULTS:
 : nil
+
+#+BEGIN_SRC clojure
+  (user-links "Jeel Shah" my-db)
+#+END_SRC
+
+#+RESULTS:
+| news.ycombinator.com/rss | https://www.farnamstreetblog.com/feed/ |
 
 Testing the function ~prettify-rss-entry~. Working.
 #+BEGIN_SRC clojure
