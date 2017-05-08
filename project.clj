@@ -10,7 +10,9 @@
                  [org.clojure/java.jdbc "0.3.7"]
                  [org.xerial/sqlite-jdbc "3.7.2"]]
   :plugins [[lein-ring "0.9.7"]]
-  :ring {:handler articles-app.handler/app}
+  :ring {:handler articles-app.handler/app
+         :auto-reload? true
+         :auto-refresh? true}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.0"]]}})

@@ -34,7 +34,8 @@ use [[https://github.com/tebeka/feedme][feedme]] to read the ~rss~ in.
 
 #+BEGIN_SRC clojure :tangle yes
   (defn read-rss [rss-url]
-    (feedme/parse rss-url))
+    (take 10
+          (:entries (feedme/parse rss-url))))
 #+END_SRC
 
 #+RESULTS:
@@ -80,8 +81,7 @@ would finish everything. Since ~read-rss~ produces as a ~LazySeq~ we can use
 
 #+BEGIN_SRC clojure :tangle yes
   (defn pretty-top-10-entries [rss-entries]
-    (take 10
-          (map prettify-rss-entry rss-entries)))
+      (map prettify-rss-entry rss-entries))
 #+END_SRC
 
 #+RESULTS:
@@ -107,7 +107,7 @@ Testing the function ~prettify-rss-entry~. Working.
   (prettify-rss-entry (nth (seq (:entries (read-rss "https://news.ycombinator.com/rss"))) 0))
 #+END_SRC
 #+RESULTS:
-: <div class="article"><h2 class="article-title"><a href="https://www.neh.gov/humanities/2017/winter/feature/lot-what-known-about-pirates-not-true-and-lot-what-true-not-known">A lot we know about pirates is not true, and a lot of what is true is not known</a></h2><p class="article-date">Sun May 07 15:46:07 EDT 2017</p></div>
+: <div class="article"><h2 class="article-title"><a></a></h2><p class="article-date"></p></div>
 
 Testing the function ~pretty-top-10-entries~. Working.
 #+BEGIN_SRC clojure

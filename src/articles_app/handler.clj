@@ -1,15 +1,19 @@
 (ns articles-app.handler
-  (:require [articles-app.retrieval-functions :as r-functions]
+  (:require [articles-app.retrieval-functions :refer [read-rss user-links pretty-top-10-entries my-db]]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [hiccup.page]))
+            [hiccup.page]
+            [hiccup.core]))
+
+(def user-rss (map #(read-rss %) (user-links "Jeel Shah" my-db)))
 
 (defn interesting-reads []
   (hiccup.page/html5
    {:lang "en"}
    [:head [:title "Interesting Reads"]]
-   [:body [:h1 "Interesting Reads"] (r-functions/pretty-top-10-entries (r-functions/user-links "Jeel Shah" r-functions/my-db))]))
+   [:body [:h1 "Interesting Reads"] (for [x (map #(pretty-top-10-entries %) user-rss)]
+                                      x)]))
 
 (defroutes app-routes
   (GET "/" [] (interesting-reads))

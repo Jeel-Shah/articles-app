@@ -11,22 +11,34 @@ myself).
 
 #+BEGIN_SRC clojure :tangle yes
   (ns articles-app.handler
-    (:require [articles-app.retrieval-functions :as r-functions]
+    (:require [articles-app.retrieval-functions :refer [read-rss user-links pretty-top-10-entries my-db]]
               [compojure.core :refer :all]
               [compojure.route :as route]
               [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-              [hiccup.page]))
+              [hiccup.page]
+              [hiccup.core]))
 #+END_SRC
 
+#+RESULTS:
+: nil
 
+We need to retrieve the links and then read them in using our read-rss function.
 
 #+BEGIN_SRC clojure :tangle yes
-  (defn interesting-reads []
-    (hiccup.page/html5
-     {:lang "en"}
-     [:head [:title "Interesting Reads"]]
-     [:body [:h1 "Interesting Reads"] (r-functions/pretty-top-10-entries (r-functions/user-links "Jeel Shah" r-functions/my-db))]))
+(def user-rss (map #(read-rss %) (user-links "Jeel Shah" my-db)))
 #+END_SRC
+
+#+BEGIN_SRC clojure :tangle yes
+(defn interesting-reads []
+  (hiccup.page/html5
+   {:lang "en"}
+   [:head [:title "Interesting Reads"]]
+   [:body [:h1 "Interesting Reads"] (for [x (map #(pretty-top-10-entries %) user-rss)]
+                                      x)]))
+#+END_SRC
+
+#+RESULTS:
+: #'user/interesting-reads
 
 We can define routes by using ~defroutes~. We will only have one route for the
 time being namely "/" because the interesting links should be at the forefront.

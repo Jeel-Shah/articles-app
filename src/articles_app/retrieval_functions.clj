@@ -6,7 +6,8 @@
 (def my-db {:classname "org.sqlite.JDBC" :subprotocol "sqlite" :subname "db.db"})
 
 (defn read-rss [rss-url]
-  (feedme/parse rss-url))
+  (take 10
+        (:entries (feedme/parse rss-url))))
 
 (defn user-links [user-name db]
   (-> (sql/query db ["select links from users where name=?" user-name])
@@ -22,5 +23,4 @@
       [:p {:class "article-date"} date]])))
 
 (defn pretty-top-10-entries [rss-entries]
-  (take 10
-        (map prettify-rss-entry rss-entries)))
+    (map prettify-rss-entry rss-entries))
