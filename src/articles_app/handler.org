@@ -23,7 +23,7 @@ myself).
     (hiccup.page/html5
      {:lang "en"}
      [:head [:title "Interesting Reads"]]
-     [:body (r-functions/pretty-top-10-entries (:entries (r-functions/read-rss "http://news.ycombinator.com/rss")))]))
+     [:body [:h1 "Interesting Reads"] (r-functions/pretty-top-10-entries (:entries (r-functions/read-rss "https://news.ycombinator.com/rss")))]))
 #+END_SRC
 
 We can define routes by using ~defroutes~. We will only have one route for the
@@ -33,7 +33,7 @@ In other words, cut the bs and show me the goods.
 #+BEGIN_SRC clojure :tangle yes
   (defroutes app-routes
     (GET "/" [] (interesting-reads))
-    (route/not-found "Sorry, that doesn\'t make sense."))
+    (route/not-found "Sorry, that doesn't make sense."))
 #+END_SRC
 
 In order to run the app we need the following:
