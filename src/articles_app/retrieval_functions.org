@@ -14,11 +14,18 @@ insert into our page.
   (ns articles-app.retrieval-functions
     (:require [feedme]
               [clojure.java.jdbc :as sql]
-              [hiccup.core :as hiccup-core]))
+              [hiccup.core]))
 #+END_SRC
 
 #+RESULTS:
 : nil
+
+#+BEGIN_SRC clojure :tangle yes
+  (def my-db {:classname "org.sqlite.JDBC" :subprotocol "sqlite" :subname "db.db"})
+#+END_SRC
+
+#+RESULTS:
+: #'user/my-db
 
 We will need a function to make a JSON call to the websites which output as
 json. Some websites will have their own functions since each API is different.
@@ -33,13 +40,6 @@ use [[https://github.com/tebeka/feedme][feedme]] to read the ~rss~ in.
 #+RESULTS:
 : #'user/read-rss
 
-#+BEGIN_SRC clojure :tangle yes
-  (def my-db {:classname "org.sqlite.JDBC" :subprotocol "sqlite" :subname "db.db"})
-#+END_SRC
-
-#+RESULTS:
-: #'user/my-db
-
 Since we have our DB setup, we need a function to retrieve a user's links once
 we have those links, we will be able to use ~read-rss~.
 
@@ -53,13 +53,6 @@ we have those links, we will be able to use ~read-rss~.
 #+RESULTS:
 : #'user/user-links
 
-Testing the function out to see if it works. The correct output should be: "[news.ycombinator.com/rss]" 
-#+BEGIN_SRC clojure
-  (assert (= (user-links "Jeel Shah" my-db) "[news.ycombinator.com/rss]") "Something went wrong")
-#+END_SRC
-#+RESULTS:
-: nil
-
 For each link we have to get first top responses from the RSS, get each of their title,
 date, link so we can prettify it with ~hiccup~.
 
@@ -70,12 +63,51 @@ encompassed in a div with classname ~article~.
 
 #+BEGIN_SRC clojure :tangle yes
   (defn prettify-rss-entry [rss-entry]
-    (let [title (:title rss-entry) link (:link rss-entry) date (:date rss-entry)]
-      (hiccup-core/html
+    (let [title (:title rss-entry) link (:link rss-entry) date (:published rss-entry)]
+      (hiccup.core/html
        [:div {:class "article"}
         [:h2 {:class "article-title"} [:a {:href link} title]]
         [:p {:class "article-date"} date]])))
 #+END_SRC
+
+#+RESULTS:
+: #'user/prettify-rss-entry
+
+A function to take the first ten links in the feed and return them to the list
+would finish everything. Since ~read-rss~ produces as a ~LazySeq~ we can use
+~take~ and map each entry from the ~LazySeq~ into ~prettify-rss-entry~.
+
+#+BEGIN_SRC clojure :tangle yes
+  (defn pretty-top-10-entries [rss-entries]
+    (take 10
+          (map prettify-rss-entry rss-entries)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/pretty-top-10-entries
+
+
+* Core Testing
+Testing the function ~user-links~. The correct output should be: "[news.ycombinator.com/rss]" 
+#+BEGIN_SRC clojure
+  (assert (= (user-links "Jeel Shah" my-db) "[news.ycombinator.com/rss]") "Something went wrong")
+#+END_SRC
+#+RESULTS:
+: nil
+
+Testing the function ~prettify-rss-entry~. Working.
+#+BEGIN_SRC clojure
+  (prettify-rss-entry (nth (seq (:entries (read-rss "https://news.ycombinator.com/rss"))) 0))
+#+END_SRC
+#+RESULTS:
+: <div class="article"><h2 class="article-title"><a href="https://www.neh.gov/humanities/2017/winter/feature/lot-what-known-about-pirates-not-true-and-lot-what-true-not-known">A lot we know about pirates is not true, and a lot of what is true is not known</a></h2><p class="article-date">Sun May 07 15:46:07 EDT 2017</p></div>
+
+Testing the function ~pretty-top-10-entries~. Working.
+#+BEGIN_SRC clojure
+  (pretty-top-10-entries (:entries (read-rss "https://news.ycombinator.com/rss")))
+#+END_SRC
+#+RESULTS:
+| <div class="article"><h2 class="article-title"><a href="https://www.neh.gov/humanities/2017/winter/feature/lot-what-known-about-pirates-not-true-and-lot-what-true-not-known">A lot we know about pirates is not true, and a lot of what is true is not known</a></h2><p class="article-date">Sun May 07 15:46:07 EDT 2017</p></div> | <div class="article"><h2 class="article-title"><a href="http://sasheldon.com/blog/2017/05/07/how-i-broke-cargo-for-windows/">I Broke Rust's Package Manager for Windows Users</a></h2><p class="article-date">Sun May 07 13:16:10 EDT 2017</p></div> | <div class="article"><h2 class="article-title"><a href="https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost/2017-02-27/Op-ed">Wikimedia Foundation spending is growing at an exponential rate</a></h2><p class="article-date">Sun May 07 15:49:32 EDT 2017</p></div> | <div class="article"><h2 class="article-title"><a href="http://ral-arturo.org/2017/05/05/debian-stretch-stable-nftables.html">New in Debian stable Stretch: nftables</a></h2><p class="article-date">Sun May 07 11:49:47 EDT 2017</p></div> | <div class="article"><h2 class="article-title"><a href="http://www.100millionbooks.org/">Show HN: 100 Million Books – Open a new tab, discover a new book</a></h2><p class="article-date">Sun May 07 12:16:50 EDT 2017</p></div> | <div class="article"><h2 class="article-title"><a href="http://www.smithsonianmag.com/smart-news/sunken-ships-lake-michigan-are-visible-ghostly-blue-180955108/?no-ist">Lake Michigan Is So Clear Right Now Its Shipwrecks Are Visible from the Air</a></h2><p class="article-date">Sun May 07 15:41:19 EDT 2017</p></div> | <div class="article"><h2 class="article-title"><a href="http://www.strikingly.com/s/careers?utm_source=hn&amp;utm_content=sh">Strikingly (YC W13) is hiring in our Shanghai office</a></h2><p class="article-date">Sun May 07 21:41:17 EDT 2017</p></div> | <div class="article"><h2 class="article-title"><a href="http://www.reuters.com/article/us-space-military-spaceplane-idUSKBN1830PF">Unmanned U.S. Air Force space plane lands after secret, two-year mission</a></h2><p class="article-date">Sun May 07 17:07:08 EDT 2017</p></div> | <div class="article"><h2 class="article-title"><a href="http://www.bbc.com/news/magazine-39821956">The Falklands penguins that would not explode</a></h2><p class="article-date">Sun May 07 16:17:28 EDT 2017</p></div> | <div class="article"><h2 class="article-title"><a href="http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=F5D7C821199F22C5D30A51F155DB9D23?doi=10.1.1.46.9499&amp;rep=rep1&amp;type=pdf">A History of CLU – Barbara Liskov (1992) [pdf]</a></h2><p class="article-date">Sun May 07 18:01:55 EDT 2017</p></div> |   
 
 * RSS Testing 
 We can look at the entries from the ~rss~ feed by using ~:entries~. Let's use
