@@ -23,7 +23,7 @@ myself).
     (hiccup.page/html5
      {:lang "en"}
      [:head [:title "Interesting Reads"]]
-     [:body (r-functions/pretty-top-10-reads (:entries (r-functions/read-rss "http://news.ycombinator.com/rss")))]))
+     [:body (r-functions/pretty-top-10-entries (:entries (r-functions/read-rss "http://news.ycombinator.com/rss")))]))
 #+END_SRC
 
 We can define routes by using ~defroutes~. We will only have one route for the
