@@ -9,10 +9,12 @@ We will have a seperate namespace which contains functions which will retrieve:
 Furthermore, it will prettify the data into list items that hiccup can use to
 insert into our page.
 
+* Core
 #+BEGIN_SRC clojure :tangle yes
   (ns articles-app.retrieval-functions
     (:require [feedme]
-              [clojure.java.jdbc :as sql]))
+              [clojure.java.jdbc :as sql]
+              [hiccup.core :as hiccup-core]))
 #+END_SRC
 
 #+RESULTS:
@@ -31,6 +33,51 @@ use [[https://github.com/tebeka/feedme][feedme]] to read the ~rss~ in.
 #+RESULTS:
 : #'user/read-rss
 
+#+BEGIN_SRC clojure :tangle yes
+  (def my-db {:classname "org.sqlite.JDBC" :subprotocol "sqlite" :subname "db.db"})
+#+END_SRC
+
+#+RESULTS:
+: #'user/my-db
+
+Since we have our DB setup, we need a function to retrieve a user's links once
+we have those links, we will be able to use ~read-rss~.
+
+#+BEGIN_SRC clojure :tangle yes
+  (defn user-links [user-name db]
+    (-> (sql/query db ["select links from users where name=?" user-name])
+        first
+        :links))
+#+END_SRC
+
+#+RESULTS:
+: #'user/user-links
+
+Testing the function out to see if it works. The correct output should be: "[news.ycombinator.com/rss]" 
+#+BEGIN_SRC clojure
+  (assert (= (user-links "Jeel Shah" my-db) "[news.ycombinator.com/rss]") "Something went wrong")
+#+END_SRC
+#+RESULTS:
+: nil
+
+For each link we have to get first top responses from the RSS, get each of their title,
+date, link so we can prettify it with ~hiccup~.
+
+First we have to retrieve the title, date and link and the prettify it with
+~hiccup~. We'll make the title ~h2~ with classname ~article-title~ and the date
+~p~ with classname ~article-date~. The ~h2~ will be clickable. This will be
+encompassed in a div with classname ~article~.
+
+#+BEGIN_SRC clojure :tangle yes
+  (defn prettify-rss-entry [rss-entry]
+    (let [title (:title rss-entry) link (:link rss-entry) date (:date rss-entry)]
+      (hiccup-core/html
+       [:div {:class "article"}
+        [:h2 {:class "article-title"} [:a {:href link} title]]
+        [:p {:class "article-date"} date]])))
+#+END_SRC
+
+* RSS Testing 
 We can look at the entries from the ~rss~ feed by using ~:entries~. Let's use
 hacker news as an example.
 #+BEGIN_SRC clojure
@@ -59,6 +106,7 @@ We can easily get the title by using ~:title~.
 Now that we have simple retrieval function for our rss feeds, we can create a
 retrieval function for ~sqlite~ db. First let's create a db.
 
+* DB Setup
 #+BEGIN_SRC clojure
   (def user-db {:classname "org.sqlite.JDBC" :subprotocol "sqlite" :subname "db.db"})
 #+END_SRC
@@ -99,3 +147,4 @@ We're going to test our db by retreving the (only) record from our db.
 
 #+RESULTS:
 | :name | Jeel Shah | :links | [news.ycombinator.com/rss] |
+
