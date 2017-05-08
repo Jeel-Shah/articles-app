@@ -9,7 +9,7 @@
   (hiccup.page/html5
    {:lang "en"}
    [:head [:title "Interesting Reads"]]
-   [:body [:h1 "Interesting Reads"] (r-functions/pretty-top-10-entries (:entries (r-functions/read-rss "https://news.ycombinator.com/rss")))]))
+   [:body [:h1 "Interesting Reads"] (r-functions/pretty-top-10-entries (r-functions/user-links "Jeel Shah" r-functions/my-db))]))
 
 (defroutes app-routes
   (GET "/" [] (interesting-reads))

@@ -11,7 +11,8 @@
 (defn user-links [user-name db]
   (-> (sql/query db ["select links from users where name=?" user-name])
       first
-      :links))
+      :links
+      read-string))
 
 (defn prettify-rss-entry [rss-entry]
   (let [title (:title rss-entry) link (:link rss-entry) date (:published rss-entry)]
