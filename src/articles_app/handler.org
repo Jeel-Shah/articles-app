@@ -10,23 +10,29 @@ We'll also set up a simple db to keep track of websites for user (in this case,
 myself).
 
 #+BEGIN_SRC clojure :tangle yes
-(ns articles-app.handler
-  (:require [compojure.core :refer :all]
-            [compojure.route :as route]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+  (ns articles-app.handler
+    (:require [articles-app.retrieval-functions :as r-functions]
+              [compojure.core :refer :all]
+              [compojure.route :as route]
+              [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+              [hiccup.page]))
+#+END_SRC
+
+#+BEGIN_SRC clojure :tangle yes
+  (defn interesting-reads []
+    (hiccup.page/html5
+     {:lang "en"}
+     [:head [:title "Interesting Reads"]]
+     [:body (r-functions/pretty-top-10-reads (:entries (r-functions/read-rss "http://news.ycombinator.com/rss")))]))
 #+END_SRC
 
 We can define routes by using ~defroutes~. We will only have one route for the
 time being namely "/" because the interesting links should be at the forefront.
 In other words, cut the bs and show me the goods.
 
-For the time being, "/" will just return a simple string (for testing purposes)
-however, that will be replaced by a function call to retrieve the posts from a
-seperate namespace that we design latter.
-
 #+BEGIN_SRC clojure :tangle yes
   (defroutes app-routes
-    (GET "/" [] "Hello World!")
+    (GET "/" [] (interesting-reads))
     (route/not-found "Sorry, that doesn\'t make sense."))
 #+END_SRC
 

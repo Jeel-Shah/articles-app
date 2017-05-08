@@ -86,7 +86,6 @@ would finish everything. Since ~read-rss~ produces as a ~LazySeq~ we can use
 #+RESULTS:
 : #'user/pretty-top-10-entries
 
-
 * Core Testing
 Testing the function ~user-links~. The correct output should be: "[news.ycombinator.com/rss]" 
 #+BEGIN_SRC clojure
